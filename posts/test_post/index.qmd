@@ -1,0 +1,15 @@
+---
+title: "Post Test"
+author: "Mathias Heinz"
+date: "2024-01-31"
+categories: [news, code, analysis]
+
+---
+```{r}
+#/ warning: false
+library(tidyverse)
+library(palmerpenguins)
+ggplot(data = penguins, aes(x = bill_length_mm))+
+  geom_histogram(color = "black", fill = "white")
+```
+
