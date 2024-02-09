@@ -18,7 +18,7 @@ ggplot(richmondway, aes(x = Episode, y = F_count_RK))+
   geom_segment(aes(xend = Episode, y = 0, yend = F_count_RK))+
   facet_wrap(~Season)+
   coord_flip()+
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major.x = element_blank())+
   theme_minimal()+
   labs(title = "Graph of Roy Kent's F_count Across All Season", x = "Number of F words", y = "Episode Number")
 ```
