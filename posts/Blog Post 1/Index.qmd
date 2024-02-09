@@ -40,8 +40,8 @@ In this graph we can see the relationship between an episodes Imdb rating and Ro
 
 Conclusions:
 
-If I had more time with this data I would like to look more into two indicator variables in the data set. These varibles denote wether or not Kent was in a relationship as the time of the episode, and if he was coaching the team at the time of them episode. I think it would be interesitng to see how these indicator variables effect the "F_count" across the seasons.
+If I had more time with this data I would like to look more into two indicator variables in the data set. These variables denote whether or not Kent was in a relationship as the time of the episode, and if he was coaching the team at the time of them episode. I think it would be interesting to see how these indicator variables effect the "F_count" across the seasons.
 
 Wrap Up:
 
-Both of the graphs I created are free of visual clutter, and have color schemes that are easy on the eye and readable. My lollipop graph is faceted to better show the difference between seasons, as having all the seasons in one graph would get messy. For my second grpah I was able to color by season as the points to not overlap and are not too close together.
+Both of the graphs I created are free of visual clutter, and have color schemes that are easy on the eye and readable. My lollipop graph is faceted to better show the difference between seasons, as having all the seasons in one graph would get messy. For my second graph I was able to color by season as the points to not overlap and are not too close together.
