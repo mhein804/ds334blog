@@ -1,0 +1,47 @@
+---
+title: "Blog Post 1"
+author: "Mathias Heinz"
+date: "2024-02-9"
+categories: [code, analysis]
+
+---
+```{r}
+library(tidyverse)
+richmondway <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-09-26/richmondway.csv')
+```
+
+For my first blog post I found a data set on the popular TV series Ted Lasso. One of the most popular characters in the show is Roy Kent, who is known for his colorful vocabulary. This data set contains multiple variables about Kent's use of the "F bomb". For my project I used the season and episode variables as well as the total "F_cout" for each episode. I also used the variable Imdb_rating which shows the Imdb rating given to each episode. I was interested in both how Kent's "F_count" changed over the seasons, and how the amout of "F_count" impacted the Imdb rating of each episode. I located my data through the following link. https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-09-26/readme.md
+
+```{r}
+ggplot(richmondway, aes(x = Episode, y = F_count_RK))+
+  geom_point(color = "blue")+
+  geom_segment(aes(xend = Episode, y = 0, yend = F_count_RK))+
+  facet_wrap(~Season)+
+  coord_flip()+
+  theme(panel.grid.major.x = element_blank())
+  theme_minimal()+
+  labs(title = "Graph of Roy Kent's F_count Across All Season", x = "Number of F words", y = "Episode Number")
+```
+
+From this vizulizatoin we can see how Roy Kent's "F-count" changes throughout the seasons. We can see as the seasons continue Kent says more and more "F bombs". The third season appears to have highest overall "F_count", but two episodes in season two have the highest "F_count" for an episode with a little over 20.
+
+```{r}
+class(richmondway$Season)
+richmondway <- richmondway |> mutate(Season_factor = as.factor(Season))
+
+ggplot(richmondway, aes(x = F_count_RK, y = Imdb_rating))+
+  geom_point(aes(color = Season_factor)) +
+  theme_minimal()+
+  labs(title = "IMDB Rating vs F_count for Roy Kent", x = "F Bombs Said by Roy Kent", y = "Imdb Rating")
+```
+
+In this graph we can see the relationship between an episodes Imdb rating and Roy Kent's "F_count". Each dot represents an episode, adn they are colored by which season the episode occured in. There does not appear to be much of a clear correlation between "F_count" and IMDB rating, however I do want to note that the two episdoes from season 2 with over 20 "F_count" both scored above a 8.75 on IMDB.
+
+
+Conclusions:
+
+If I had more time with this data I would like to look more into two indicator variables in the data set. These varibles denote wether or not Kent was in a relationship as the time of the episode, and if he was coaching the team at the time of them episode. I think it would be interesitng to see how these indicator variables effect the "F_count" across the seasons.
+
+Wrap Up:
+
+Both of the graphs I created are free of visual clutter, and have color schemes that are easy on the eye and readable. My lollipop graph is faceted to better show the difference between seasons, as having all the seasons in one graph would get messy. For my second grpah I was able to color by season as the points to not overlap and are not too close together.
