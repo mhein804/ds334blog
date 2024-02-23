@@ -23,7 +23,7 @@ ggplot(richmondway, aes(x = Episode, y = F_count_RK))+
   labs(title = "Graph of Roy Kent's F_count Across All Season", x = "Number of F words", y = "Episode Number")
 ```
 
-From this vizulizatoin we can see how Roy Kent's "F-count" changes throughout the seasons. We can see as the seasons continue Kent says more and more "F bombs". The third season appears to have highest overall "F_count", but two episodes in season two have the highest "F_count" for an episode with a little over 20.
+From this visualization we can see how Roy Kent's "F-count" changes throughout the seasons. We can see as the seasons continue Kent says more and more "F bombs". The third season appears to have highest overall "F_count", but two episodes in season two have the highest "F_count" for an episode with a little over 20.
 
 ```{r}
 class(richmondway$Season)
