@@ -3,12 +3,12 @@ project:
   output-dir: docs
 
 website:
-  title: "ds334blog"
+  title: "Data Vizulizations 334 Blog"
   navbar:
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/
+        href: https://github.com/mhein804
       - icon: twitter
         href: https://twitter.com
 format:
