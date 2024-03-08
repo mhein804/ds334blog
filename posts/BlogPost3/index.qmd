@@ -1,0 +1,102 @@
+---
+title: "Blog Post 3"
+author: "Mathias Heinz"
+date: "2024-02-19"
+categories: [code, analysis]
+
+---
+The data sat I choose to work with for this data set came from the Tidy Tuesday data, and contained information about NFL teams. I wanted to try and create a model for predicting wins using other variables from the data set. Some variables I worked with include, points for, points against, playoffs, offensive and defensive ranking, and lastly strength of schedule.
+I retrieved my data from: https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md
+```{r}
+library(tidyverse)
+library(broom)
+library(modelr)
+```
+
+```{r}
+standings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-04/standings.csv')
+
+NFL2019 <- standings |> filter(year == 2019)
+
+nfl_mod <- lm(wins ~ points_against + strength_of_schedule + playoffs,
+              data = NFL2019)
+
+grid_nfl <- NFL2019 |> data_grid(
+  points_against = seq_range(points_against, n = 6),
+  strength_of_schedule = seq_range(strength_of_schedule, n = 6),
+  playoffs = c("Playoffs", "No Playoffs")
+)
+aug_nfl <- augment(nfl_mod, newdata = grid_nfl,
+                   interval = "confidence")
+```
+
+```{r}
+nfl_mod
+```
+The fitted equations looks like 
+predicted wins = 13.898 - .0204*PA + .434*SOS + 4.039*(1 if Yes made playoffs)
+
+```{r}
+ggplot(data = NFL2019, aes(x = points_against, y = wins)) +
+  geom_point()+
+  geom_line(data = aug_nfl, aes(x = points_against, y = .fitted,
+                                color = as.factor(strength_of_schedule))) +
+  facet_wrap(~ playoffs)+
+  scale_fill_viridis_d()+
+  theme_minimal()
+```
+
+This graph was the only one which I was able to display the data in the way that I wanted. Here we are looking at the graph for predicted wins during the 2019 NFL season. The predictors I used for this model were points against, playoffs, and strength of schedule. I faceted the graph based on wether a team mae the playoffs that year or not, and each line represents a different strength of schedule.
+```{r}
+nfl_2_mod <- lm(wins ~ points_for + defensive_ranking + playoffs,
+              data = NFL2019)
+
+grid_nfl_2 <- NFL2019 |> data_grid(
+  points_for = seq_range(points_for, n = 6),
+  defensive_ranking = seq_range(defensive_ranking, n = 6),
+  playoffs = c("Playoffs", "No Playoffs")
+)
+aug_nfl_2 <- augment(nfl_2_mod, newdata = grid_nfl_2,
+                   interval = "confidence")
+
+ggplot(data = NFL2019, aes(x = points_for, y = wins)) +
+  geom_point()+
+  geom_line(data = aug_nfl_2, aes(x = points_for, y = .fitted)) +
+  facet_wrap(~playoffs)+
+  scale_fill_viridis_d()+
+  theme_minimal()
+```
+
+```{r}
+steelers <- standings |> filter(team == "Pittsburgh")
+full_mod <- lm(wins ~ year + offensive_ranking + defensive_ranking,
+               data = steelers)
+
+full_grid <- steelers |> data_grid(
+  year = c(2000:2019),
+  offensive_ranking = seq_range(offensive_ranking, n = 6),
+  defensive_ranking = seq_range(defensive_ranking, n = 6)
+)
+
+full_aug <- augment(full_mod, newdata = full_grid,
+                    interval = "confidence")
+
+ggplot(data = steelers, aes(x = year, y = wins))+
+  geom_point()+
+  geom_line(data = full_aug, aes(x = year, y = .fitted), alpha = .4)+
+  theme_minimal()
+```
+
+The previous two graphs did not turn out how I had hoped, but I spent a lot of time trying to get the code to work so wanted to keep them in as proof of my work. In the top graph I was trying to look at all years in the data set to make my predictions. The second graph I was trying to predict the wins for my favorite team the Steelers, but that did not work out either.
+
+
+Conclusions:
+
+If I had more tie with this data set I am sure I could have got my other two models and graphs to run. Further, I would like to look further into the simple_rating variable which seemed interesting, and I want to try and see if I can predict Superbowl winner using predictors from the data set.
+
+Connections to Class:
+
+The process I followed to create my models was directly related to the path we learned in class. First fitting the model with lm(), then constructing a grid, using augment to get the predictions, and finally plotting the predictions. I wish I had been able to create some more different plots with this data.
+
+
+
