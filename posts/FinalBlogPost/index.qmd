@@ -1,0 +1,114 @@
+---
+title: "Final Blog Post"
+author: "Mathias Heinz"
+date: "2024-02-19"
+categories: [code, analysis]
+
+---
+This blog post is a shortened version of my Final Project for Data Vizulization 334 at St. Lawrence University. This report uses data collected by wine enthusiasts and submitted to git hub's tidytuesdays to analyze how wine production looks around the world. The data set contains wines from many countries around the world, with various information on each wine.
+
+```{r}
+library(tidyverse)
+library(shiny)
+library(plotly)
+
+wine_ratings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-28/winemag-data-130k-v2.csv")
+
+wine_clean <- wine_ratings |> filter(variety == "Cabernet Sauvignon" 
+                                     | variety == "Pinot Noir" | variety == "Merlot" 
+                                     | variety == "Chardonnay" | variety == "Sauvignon Blanc"
+                                     | variety == "Pinot Gris" |  variety == "Reisling"                           | variety == "Red Blend"
+                                     | variety == "White Blend" | variety == "Malbec"
+                                     | variety == "Rosé" | variety == "Moscato"
+                                     | variety == "Prosecco" | variety == "Tempranillo"
+                                     | variety == "Syrah" | variety == "Shiraz"
+                                     | variety == "Zinfandel") |> 
+  mutate(r_w = case_when(variety == "Chardonnay" 
+                          | variety == "Sauvignon Blanc" 
+                          | variety == "Pinot Gris" 
+                          | variety == "Reisling" 
+                          | variety == "White Blend"
+                          | variety == "Moscato"
+                          | variety == "Rosé"
+                          | variety == "Prosecco" ~ "White",
+         variety == "Cabernet Sauvignon" | variety == "Pinot Noir"
+         | variety == "Merlot" | variety == "Red Blend" | 
+           variety == "Malbec" | variety == "Tempranillo" |
+           variety == "Syrah" | variety == "Shiraz" |
+           variety == "Zinfandel" ~ "Red"))
+grape_sel <- wine_clean |> distinct(variety) |> pull(variety)
+country_sel <- wine_clean |> distinct(country) |> pull(country)
+wine_ratings |> distinct(variety) |> pull(variety)
+wine_ratings |> filter(variety == "Zinfandel")
+wine_clean |> filter(!is.na(price)) |> summarise(min(price))
+wine_clean |> filter(!is.na(price)) |> summarise(max(price))
+## Of the 707 varieties in the data set I have collected 17 of the most popular grape varieties, leaving me with almost 60,000 observations.
+```
+
+
+```{r}
+wine_country <- wine_ratings |> mutate(country = fct_recode(country,
+                                      "USA" = "US")) |>
+  group_by(country) |> 
+  summarise(total_wine = n())
+
+
+world_df <- map_data("world")
+world_full<- left_join(world_df, wine_country,
+                       by = c("region" = "country"))
+world_plot <- ggplot(data = world_full, aes(x = long, y = lat, group = group, 
+                              label = region))+
+  geom_polygon(aes(fill = total_wine ))+
+  coord_map(projection = "mercator", xlim = c(-180,180))+
+  scale_fill_viridis_c(direction = -1, option = "D")+
+  labs(title = "Map of the World Colored by Total Number of Unique Wines")
+
+# ggplotly(world_plot, tooltip = "label")
+# the above line of code runs in this rstudio window and my final project window, but is causing the website to not render.
+```
+
+Here we can see a map showing the whole world. The countries colored in are countries included in the data set that I cleaned. Each country is colored by the total amount of observations for each country. More simply, counting up the total number of wines listed for each country. The United States has noticeably the highest amount coming in over 50,000 different wines. Following the US appears to be France and Italy who both fall in the 20,000 - 30,000 range. Some other notable countries include Argentina, Spain and Portugal who have slightly higher production than the other countries shown.
+
+## US Analysis
+```{r}
+ggplot(wine_clean |> filter(country == "US") |> filter(r_w == "Red"), 
+       aes(x = variety))+
+  geom_bar(fill = "magenta4")+
+  labs(title = "Red Wines From the United States")
+  
+ggplot(wine_clean |> filter(country == "US") |> filter(r_w == "White"), 
+       aes(x = variety))+
+  geom_bar(fill = "yellow3")+
+  labs(title = "White Wines From the United States")
+
+wine_u <- wine_clean |> filter(country == "US") |> filter(!is.na(variety))
+ggplot(wine_u, aes(x = price, y = points))+
+  geom_hex()+
+  scale_color_viridis_c()+
+  labs(title = "Hex Plot of price vs points for United States Wines")
+
+```
+As I found the US to have the largest number of wines, I wanted to see how the distribution looked between red and white wines, as well as see the the distribution of US wines based on price vs points. I found that Pinot Noir was the most common red variety with almost 10,000 observations. Following Pinot Noir is Cabernet Sauvignon with just under 7,500 different wines. The hex plot shows that the highest density of US wines are between $1-$125 and score around 90 points.
+
+```{r}
+cali_cs_pn <- wine_clean |> filter(country == "US") |> 
+  filter(variety == "Cabernet Sauvignon" | variety == "Pinot Noir") |> 
+  filter(province == "California")
+wine_cali <- wine_clean |> filter(country == "US") |> 
+  filter(province == "California")
+
+ggplot(wine_cali |> filter(r_w == "Red"), aes(x = variety))+
+  geom_bar(fill = "magenta4")+
+  labs(title = "Red Wines of California, US")
+
+ggplot(cali_cs_pn, aes(x = variety, y = price))+
+  geom_boxplot(fill = "magenta4", color = "yellow3")+
+  labs(title = "Boxplot of Price for Cabernet Sauvignon and Pinot Noir from California")
+
+```
+
+  One of the most famous wine growing regions in the United States is California, and its wineries are known for their Cabernet Sauvigon's. Despite this, in the bar chart we can see that there are actually more individual bottles of Pinot Noir, but Cabernet Sauvignon is a close second. Next, the boxplot shows that although there are more Pinor Noirs, Cabernet Sauvignon is slightly more expensive on average, both around $50. However, there are no Pinor Noir bottles over $200, while Cabernet Sauvignon has many bottles over $200 and one more than $600.
+  
+  I thouroughly enjoyed this project and working with this data. My summer job is working as a bartender and I serve a good amout of wine, so it was enjoyable to learn more about wines in the world. I found various class lessons useful in my time working on this project. In my full report I include two geographic maps as well as a siny app that be used to examine wines in different countries. A link to my full project including the report and app can be found here: https://github.com/mhein804/ds334final_project 
+
+

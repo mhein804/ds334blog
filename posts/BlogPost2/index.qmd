@@ -21,10 +21,15 @@ life_expectancy_2020 <- life_expectancy |> filter(!is.na(Code)) |>
 world_df <- map_data("world")
 world_full<- left_join(world_df, life_expectancy_2020,
                        by = c("region" = "Entity"))
-ggplot(data = world_full, aes(x = long, y = lat, group = group))+
+world_plot <- ggplot(data = world_full, aes(x = long, y = lat, group = group, 
+                              label = region))+
   geom_polygon(aes(fill = LifeExpectancy))+
   coord_map(projection = "mercator", xlim = c(-180,180))+
   scale_fill_viridis_c(direction = -1, option = "D")
+
+library(plotly)
+
+ggplotly(world_plot, tooltip = "label")
 ```
 
   This map shows the the whole globe using the Mercator projection style. Each country is colored based on their life expectancy is the year 2020. From this we can see that countries like Australia and Canada have high life expectancy, in the 80's. While some countries in central Africa have lower life expectancy, down in the mid to low 60's.
